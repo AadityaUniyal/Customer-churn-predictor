@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Customer Churn Predictor{% endblock %}
+
+{% block extra_head %}
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .admin-card {
+        border-left: 4px solid #dc3545;
+        transition: all 0.3s;
+    }
+    .admin-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 20px rgba(220, 53, 69, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-header">
+        <h1 class="display-4 fw-bold mb-2">
+            <i class="fas fa-shield-alt"></i> Admin Panel
+        </h1>
+        <p class="lead mb-0">System Administration & Data Management</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card admin-card shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-users"></i> User Management</h5>
+                    <p class="card-text">View and manage all system users</p>
+                    <button class="btn btn-danger" onclick="showUsers()">
+                        <i class="fas fa-list"></i> View Users
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card admin-card shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-database"></i> Data Overview</h5>
+                    <p class="card-text">View all customer data and predictions</p>
+                    <button class="btn btn-danger" onclick="showAllData()">
+                        <i class="fas fa-table"></i> View All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card admin-card shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-chart-bar"></i> System Statistics</h5>
+                    <p class="card-text">View system usage and performance metrics</p>
+                    <button class="btn btn-danger" onclick="showStats()">
+                        <i class="fas fa-analytics"></i> View Stats
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card admin-card shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-cog"></i> System Settings</h5>
+                    <p class="card-text">Configure system parameters and settings</p>
+                    <button class="btn btn-danger" onclick="showSettings()">
+                        <i class="fas fa-wrench"></i> Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="adminContent" class="mt-4"></div>
+</div>
+
+<script>
+function showUsers() {
+    document.getElementById('adminContent').innerHTML = `
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-users"></i> System Users</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>user</td>
+                            <td>John Doe</td>
+                            <td><span class="badge bg-primary">User</span></td>
+                            <td><span class="badge bg-success">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>admin</td>
+                            <td>Admin User</td>
+                            <td><span class="badge bg-danger">Admin</span></td>
+                            <td><span class="badge bg-success">Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function showAllData() {
+    fetch('/api/get-data-stats')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('adminContent').innerHTML = `
+                    <div class="card shadow">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0"><i class="fas fa-database"></i> Data Overview</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <h3 class="text-primary">${data.stats.total}</h3>
+                                    <p class="text-muted">Total Customers</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h3 class="text-danger">${data.stats.churned}</h3>
+                                    <p class="text-muted">Churned</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h3 class="text-success">${data.stats.retained}</h3>
+                                    <p class="text-muted">Retained</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h3 class="text-warning">${(data.stats.churn_rate * 100).toFixed(1)}%</h3>
+                                    <p class="text-muted">Churn Rate</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('adminContent').innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> No data available. Please generate data first.
+                    </div>
+                `;
+            }
+        });
+}
+
+function showStats() {
+    document.getElementById('adminContent').innerHTML = `
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> System Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h4 class="text-primary">4</h4>
+                        <p class="text-muted">ML Models Available</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4 class="text-success">84%+</h4>
+                        <p class="text-muted">Average Accuracy</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4 class="text-info">13</h4>
+                        <p class="text-muted">Features Analyzed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function showSettings() {
+    document.getElementById('adminContent').innerHTML = `
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-cog"></i> System Settings</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Model Training Threshold</label>
+                        <input type="number" class="form-control" value="0.8" step="0.01">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Churn Risk Threshold</label>
+                        <input type="number" class="form-control" value="0.5" step="0.01">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Default Test Size</label>
+                        <input type="number" class="form-control" value="0.2" step="0.01">
+                    </div>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </form>
+            </div>
+        </div>
+    `;
+}
+</script>
+{% endblock %}

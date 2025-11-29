@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block title %}Make Predictions - Customer Churn Predictor{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-primary"><i class="fas fa-magic"></i> Make Churn Predictions</h2>
+            <p class="text-muted">Enter customer information to predict churn probability</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Input Form -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user"></i> Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <form id="predictionForm">
+                        <!-- Model Selection -->
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-brain"></i> Select Model</label>
+                            <select class="form-select" id="model" required>
+                                <option value="">Loading models...</option>
+                            </select>
+                        </div>
+
+                        <hr>
+
+                        <!-- Demographics -->
+                        <h6 class="text-primary"><i class="fas fa-id-card"></i> Demographics</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Age</label>
+                                <input type="number" class="form-control" id="age" value="35" min="18" max="100" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" id="gender" required>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Account Info -->
+                        <h6 class="text-primary mt-3"><i class="fas fa-file-invoice-dollar"></i> Account Information</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Tenure (months)</label>
+                            <input type="number" class="form-control" id="tenure" value="12" min="0" max="100" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Monthly Charges ($)</label>
+                                <input type="number" class="form-control" id="monthly_charges" value="65.5" step="0.01" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Total Charges ($)</label>
+                                <input type="number" class="form-control" id="total_charges" value="786" step="0.01" required>
+                            </div>
+                        </div>
+
+                        <!-- Services -->
+                        <h6 class="text-primary mt-3"><i class="fas fa-wifi"></i> Services</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Contract Type</label>
+                            <select class="form-select" id="contract" required>
+                                <option value="Month-to-month">Month-to-month</option>
+                                <option value="One year" selected>One year</option>
+                                <option value="Two year">Two year</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Internet Service</label>
+                            <select class="form-select" id="internet_service" required>
+                                <option value="DSL">DSL</option>
+                                <option value="Fiber optic" selected>Fiber optic</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Online Security</label>
+                                <select class="form-select" id="online_security" required>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No" selected>No</option>
+                                    <option value="No internet service">No internet service</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tech Support</label>
+                                <select class="form-select" id="tech_support" required>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No" selected>No</option>
+                                    <option value="No internet service">No internet service</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Billing -->
+                        <h6 class="text-primary mt-3"><i class="fas fa-credit-card"></i> Billing</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Payment Method</label>
+                            <select class="form-select" id="payment_method" required>
+                                <option value="Electronic check">Electronic check</option>
+                                <option value="Mailed check">Mailed check</option>
+                                <option value="Bank transfer">Bank transfer</option>
+                                <option value="Credit card" selected>Credit card</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Paperless Billing</label>
+                            <select class="form-select" id="paperless_billing" required>
+                                <option value="Yes" selected>Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+
+                        <!-- Additional -->
+                        <h6 class="text-primary mt-3"><i class="fas fa-plus-circle"></i> Additional Info</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Number of Products</label>
+                                <input type="number" class="form-control" id="num_products" value="2" min="1" max="10" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Support Tickets</label>
+                                <input type="number" class="form-control" id="support_tickets" value="2" min="0" max="20" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+                            <i class="fas fa-magic"></i> Predict Churn
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="col-lg-7">
+            <div id="noResults" class="text-center text-muted py-5">
+                <i class="fas fa-chart-line fa-5x mb-3"></i>
+                <h4>No Predictions Yet</h4>
+                <p>Fill in the customer information and click "Predict Churn"</p>
+            </div>
+
+            <div id="resultsContainer" style="display: none;">
+                <!-- Prediction Result -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body text-center" id="predictionCard">
+                        <h3 class="mb-3" id="predictionText"></h3>
+                        <div id="gaugeChart"></div>
+                    </div>
+                </div>
+
+                <!-- Probabilities -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+                                <h4 class="text-danger mb-0" id="churnProb">-</h4>
+                                <p class="text-muted mb-0">Churn Probability</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <h4 class="text-success mb-0" id="retentionProb">-</h4>
+                                <p class="text-muted mb-0">Retention Probability</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Insights -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-users"></i> Customer Segment</h6>
+                            </div>
+                            <div class="card-body">
+                                <h5 id="segment" class="text-center">-</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0"><i class="fas fa-dollar-sign"></i> Lifetime Value</h6>
+                            </div>
+                            <div class="card-body">
+                                <h5 id="clv" class="text-center">-</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Factors -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-warning">
+                        <h6 class="mb-0"><i class="fas fa-exclamation-circle"></i> Risk Factors</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="riskFactors"></div>
+                    </div>
+                </div>
+
+                <!-- Retention Strategies -->
+                <div class="card shadow-sm" id="strategiesCard" style="display: none;">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-lightbulb"></i> Recommended Retention Strategies</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul id="strategies" class="mb-0"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Load available models
+$(document).ready(function() {
+    $.get('/api/get-models', function(response) {
+        if (response.success) {
+            const select = $('#model');
+            select.empty();
+            response.models.forEach(model => {
+                select.append(`<option value="${model}">${model}</option>`);
+            });
+        }
+    }).fail(function() {
+        $('#model').html('<option value="">No trained models. Train models first.</option>');
+    });
+});
+
+$('#predictionForm').submit(function(e) {
+    e.preventDefault();
+    
+    const data = {
+        model: $('#model').val(),
+        age: $('#age').val(),
+        gender: $('#gender').val(),
+        tenure: $('#tenure').val(),
+        monthly_charges: $('#monthly_charges').val(),
+        total_charges: $('#total_charges').val(),
+        contract: $('#contract').val(),
+        internet_service: $('#internet_service').val(),
+        online_security: $('#online_security').val(),
+        tech_support: $('#tech_support').val(),
+        payment_method: $('#payment_method').val(),
+        paperless_billing: $('#paperless_billing').val(),
+        num_products: $('#num_products').val(),
+        support_tickets: $('#support_tickets').val()
+    };
+    
+    $.ajax({
+        url: '/api/predict',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(response) {
+            if (response.success) {
+                displayPrediction(response);
+            }
+        },
+        error: function(xhr) {
+            alert('Error: ' + (xhr.responseJSON?.error || 'Unknown error'));
+        }
+    });
+});
+
+function displayPrediction(data) {
+    $('#noResults').hide();
+    $('#resultsContainer').show();
+    
+    // Prediction text
+    const isChurn = data.prediction === 1;
+    const predCard = $('#predictionCard');
+    
+    if (isChurn) {
+        predCard.removeClass('bg-success').addClass('bg-danger text-white');
+        $('#predictionText').html('<i class="fas fa-exclamation-triangle"></i> Customer is Likely to CHURN');
+    } else {
+        predCard.removeClass('bg-danger').addClass('bg-success text-white');
+        $('#predictionText').html('<i class="fas fa-check-circle"></i> Customer is Likely to STAY');
+    }
+    
+    // Probabilities
+    $('#churnProb').text((data.churn_probability * 100).toFixed(1) + '%');
+    $('#retentionProb').text((data.retention_probability * 100).toFixed(1) + '%');
+    
+    // Gauge chart
+    createGaugeChart(data.churn_probability);
+    
+    // Customer insights
+    $('#segment').text(data.segment);
+    $('#clv').text('$' + data.lifetime_value.toLocaleString());
+    
+    // Risk factors
+    const riskDiv = $('#riskFactors');
+    riskDiv.empty();
+    
+    if (Object.keys(data.risk_factors).length > 0) {
+        Object.entries(data.risk_factors).forEach(([factor, details]) => {
+            const severityClass = details.severity === 'High' ? 'danger' : 
+                                 details.severity === 'Medium' ? 'warning' : 'info';
+            const icon = details.severity === 'High' ? '🔴' : 
+                        details.severity === 'Medium' ? '🟡' : '🟢';
+            
+            riskDiv.append(`
+                <div class="alert alert-${severityClass} mb-2">
+                    ${icon} <strong>${factor}</strong>: ${details.message}
+                </div>
+            `);
+        });
+    } else {
+        riskDiv.html('<p class="text-success"><i class="fas fa-check"></i> No significant risk factors identified</p>');
+    }
+    
+    // Retention strategies
+    if (isChurn && data.retention_strategies.length > 0) {
+        $('#strategiesCard').show();
+        const strategiesList = $('#strategies');
+        strategiesList.empty();
+        data.retention_strategies.forEach(strategy => {
+            strategiesList.append(`<li class="mb-2">${strategy}</li>`);
+        });
+    } else {
+        $('#strategiesCard').hide();
+    }
+}
+
+function createGaugeChart(probability) {
+    const value = probability * 100;
+    
+    const data = [{
+        type: "indicator",
+        mode: "gauge+number",
+        value: value,
+        title: { text: "Churn Risk Score" },
+        gauge: {
+            axis: { range: [null, 100] },
+            bar: { color: value > 70 ? "darkred" : value > 50 ? "orange" : "green" },
+            steps: [
+                { range: [0, 30], color: "lightgreen" },
+                { range: [30, 70], color: "yellow" },
+                { range: [70, 100], color: "lightcoral" }
+            ],
+            threshold: {
+                line: { color: "red", width: 4 },
+                thickness: 0.75,
+                value: 50
+            }
+        }
+    }];
+    
+    const layout = {
+        height: 300,
+        margin: { t: 25, r: 25, l: 25, b: 25 }
+    };
+    
+    Plotly.newPlot('gaugeChart', data, layout, {responsive: true});
+}
+</script>
+{% endblock %}

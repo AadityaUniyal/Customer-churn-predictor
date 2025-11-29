@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Customer Churn Predictor{% endblock %}
+
+{% block extra_head %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        animation: fadeInDown 0.6s ease-out;
+    }
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .feature-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out;
+        animation-fill-mode: both;
+    }
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.2s; }
+    .feature-card:nth-child(3) { animation-delay: 0.3s; }
+    .feature-card:nth-child(4) { animation-delay: 0.4s; }
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    .feature-card .card-body {
+        padding: 30px;
+    }
+    .feature-icon {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        display: inline-block;
+        transition: transform 0.3s;
+    }
+    .feature-card:hover .feature-icon {
+        transform: scale(1.2) rotate(5deg);
+    }
+    .btn-feature {
+        border-radius: 25px;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .btn-feature:hover {
+        transform: scale(1.05);
+    }
+    .user-info {
+        background: rgba(255,255,255,0.2);
+        padding: 15px 25px;
+        border-radius: 25px;
+        display: inline-block;
+        backdrop-filter: blur(10px);
+    }
+    .quick-stats {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        animation: fadeIn 0.8s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    .stat-item {
+        text-align: center;
+        padding: 15px;
+    }
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        display: block;
+    }
+    .admin-badge {
+        background: #dc3545;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        margin-left: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-4 fw-bold mb-2">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </h1>
+                <p class="lead mb-0">Welcome to your Customer Churn Prediction System</p>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-user-circle fa-2x"></i>
+                <div class="d-inline-block ms-2">
+                    <strong>{{ session.name }}</strong>
+                    {% if session.role == 'admin' %}
+                        <span class="admin-badge"><i class="fas fa-shield-alt"></i> Admin</span>
+                    {% endif %}
+                    <br>
+                    <small>{{ session.role|title }} Account</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="quick-stats">
+        <h4 class="text-center mb-4"><i class="fas fa-chart-bar"></i> System Capabilities</h4>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number text-primary">4</span>
+                    <small class="text-muted">ML Models</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number text-success">84%+</span>
+                    <small class="text-muted">Accuracy</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number text-warning">&lt;1s</span>
+                    <small class="text-muted">Prediction Time</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number text-info">13</span>
+                    <small class="text-muted">Features</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <h3 class="mb-4"><i class="fas fa-rocket"></i> Get Started</h3>
+    
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="card feature-card shadow">
+                <div class="card-body text-center">
+                    <div class="feature-icon text-primary">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Manage Data</h5>
+                    <p class="card-text text-muted">Generate synthetic customer data or upload your own dataset</p>
+                    <a href="{{ url_for('data_page') }}" class="btn btn-primary btn-feature">
+                        <i class="fas fa-arrow-right"></i> Go to Data
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card feature-card shadow">
+                <div class="card-body text-center">
+                    <div class="feature-icon text-success">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Train Models</h5>
+                    <p class="card-text text-muted">Train multiple ML models and compare their performance</p>
+                    <a href="{{ url_for('train_page') }}" class="btn btn-success btn-feature">
+                        <i class="fas fa-arrow-right"></i> Train Now
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card feature-card shadow">
+                <div class="card-body text-center">
+                    <div class="feature-icon text-warning">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">Make Predictions</h5>
+                    <p class="card-text text-muted">Predict churn for individual customers with AI</p>
+                    <a href="{{ url_for('predict_page') }}" class="btn btn-warning btn-feature">
+                        <i class="fas fa-arrow-right"></i> Predict
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card feature-card shadow">
+                <div class="card-body text-center">
+                    <div class="feature-icon text-info">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">View Insights</h5>
+                    <p class="card-text text-muted">Analyze model performance and get business insights</p>
+                    <a href="{{ url_for('insights_page') }}" class="btn btn-info btn-feature">
+                        <i class="fas fa-arrow-right"></i> Insights
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if session.role == 'admin' %}
+    <div class="alert alert-danger shadow" role="alert">
+        <h5 class="alert-heading"><i class="fas fa-shield-alt"></i> Admin Access</h5>
+        <p>You have administrator privileges. You can access all data and system settings.</p>
+        <hr>
+        <a href="{{ url_for('admin_page') }}" class="btn btn-danger">
+            <i class="fas fa-cog"></i> Admin Panel
+        </a>
+    </div>
+    {% endif %}
+    
+    <div class="card shadow">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-info-circle"></i> Quick Guide</h5>
+            <ol class="mb-0">
+                <li><strong>Generate Data:</strong> Start by creating sample customer data</li>
+                <li><strong>Train Models:</strong> Train machine learning models on the data</li>
+                <li><strong>Make Predictions:</strong> Enter customer details to predict churn</li>
+                <li><strong>Analyze Results:</strong> View insights and retention strategies</li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}

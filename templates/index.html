@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Customer Churn Predictor{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-3 fw-bold text-primary mb-3">
+                <i class="fas fa-chart-line"></i> Customer Churn Predictor
+            </h1>
+            <p class="lead text-muted">
+                Predict customer churn using advanced machine learning algorithms
+            </p>
+        </div>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="card feature-card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-database fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Generate Data</h5>
+                    <p class="card-text">Create realistic synthetic customer data with proper correlations</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card feature-card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-brain fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">Train Models</h5>
+                    <p class="card-text">Train multiple ML models and compare their performance</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card feature-card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-magic fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">Make Predictions</h5>
+                    <p class="card-text">Get real-time churn predictions with probability scores</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card feature-card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-lightbulb fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">Get Insights</h5>
+                    <p class="card-text">Understand predictions with risk factors and strategies</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Start -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-rocket"></i> Quick Start Guide</h4>
+                </div>
+                <div class="card-body">
+                    <ol class="list-group list-group-numbered">
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Generate Sample Data</div>
+                                Navigate to the Data page and generate synthetic customer data
+                            </div>
+                            <span class="badge bg-primary rounded-pill">Step 1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Train ML Models</div>
+                                Go to Train Models page and train 4 different algorithms
+                            </div>
+                            <span class="badge bg-primary rounded-pill">Step 2</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Make Predictions</div>
+                                Enter customer information and get churn predictions
+                            </div>
+                            <span class="badge bg-primary rounded-pill">Step 3</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Explore Insights</div>
+                                View risk factors and retention strategies
+                            </div>
+                            <span class="badge bg-primary rounded-pill">Step 4</span>
+                        </li>
+                    </ol>
+                    
+                    <div class="text-center mt-4">
+                        <a href="/data" class="btn btn-primary btn-lg">
+                            <i class="fas fa-play"></i> Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title text-primary mb-3">
+                        <i class="fas fa-check-circle"></i> What You Get
+                    </h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> 4 ML Models (Logistic Regression, Random Forest, Gradient Boosting, XGBoost)</li>
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> Real-time churn predictions</li>
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> Interactive visualizations</li>
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> Business insights & strategies</li>
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> Customer segmentation</li>
+                        <li class="mb-2"><i class="fas fa-check text-success"></i> Lifetime value calculation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title text-primary mb-3">
+                        <i class="fas fa-info-circle"></i> About Churn Prediction
+                    </h4>
+                    <p>Customer churn refers to when customers stop doing business with a company. Predicting churn helps businesses:</p>
+                    <ul>
+                        <li>Identify at-risk customers early</li>
+                        <li>Take proactive retention actions</li>
+                        <li>Reduce revenue loss</li>
+                        <li>Improve customer satisfaction</li>
+                        <li>Optimize marketing spend</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Preview -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h4 class="card-title text-primary mb-4">
+                        <i class="fas fa-chart-bar"></i> Performance Metrics
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <h2 class="text-primary">84%+</h2>
+                                <p class="text-muted">Model Accuracy</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <h2 class="text-success">&lt;1s</h2>
+                                <p class="text-muted">Prediction Time</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <h2 class="text-warning">4</h2>
+                                <p class="text-muted">ML Models</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <h2 class="text-info">13</h2>
+                                <p class="text-muted">Features</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

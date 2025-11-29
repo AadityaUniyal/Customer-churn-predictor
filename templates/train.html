@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}Train Models - Customer Churn Predictor{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-primary"><i class="fas fa-brain"></i> Train Machine Learning Models</h2>
+            <p class="text-muted">Train and compare multiple classification models</p>
+        </div>
+    </div>
+
+    <!-- Training Configuration -->
+    <div class="row mb-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-cog"></i> Training Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="testSize" class="form-label">Test Set Size (%)</label>
+                        <input type="range" class="form-range" id="testSize" min="10" max="40" value="20">
+                        <div class="text-center"><span id="testSizeValue">20</span>%</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> <strong>Models to train:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Logistic Regression</li>
+                            <li>Random Forest</li>
+                            <li>Gradient Boosting</li>
+                            <li>XGBoost</li>
+                        </ul>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-lg w-100" id="trainBtn">
+                        <i class="fas fa-play"></i> Train Models
+                    </button>
+                    
+                    <div id="trainStatus" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Training Progress -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-tasks"></i> Training Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div id="progressContainer" style="display: none;">
+                        <div class="progress mb-3" style="height: 30px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 id="trainingProgress" 
+                                 role="progressbar" 
+                                 style="width: 0%">
+                                0%
+                            </div>
+                        </div>
+                        <div id="currentModel" class="text-center text-muted"></div>
+                    </div>
+                    <div id="noTraining" class="text-center text-muted py-5">
+                        <i class="fas fa-robot fa-4x mb-3"></i>
+                        <p>Click "Train Models" to start training</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Performance -->
+    <div class="row mb-4" id="resultsSection" style="display: none;">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-trophy"></i> Model Performance Comparison</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="resultsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Accuracy</th>
+                                    <th>Precision</th>
+                                    <th>Recall</th>
+                                    <th>F1 Score</th>
+                                    <th>ROC AUC</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Charts -->
+    <div class="row mb-4" id="chartsSection" style="display: none;">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Model Comparison</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="modelComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-chart-radar"></i> Metrics Radar</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="metricsRadarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Importance -->
+    <div class="row" id="featureSection" style="display: none;">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-star"></i> Feature Importance (Best Model)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="featureImportanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let modelComparisonChart, metricsRadarChart, featureImportanceChart;
+
+$('#testSize').on('input', function() {
+    $('#testSizeValue').text($(this).val());
+});
+
+$('#trainBtn').click(function() {
+    const testSize = $('#testSize').val() / 100;
+    const btn = $(this);
+    
+    btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Training...');
+    $('#noTraining').hide();
+    $('#progressContainer').show();
+    $('#trainStatus').html('<div class="alert alert-info">Training models... This may take 30-60 seconds.</div>');
+    
+    // Simulate progress
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += 5;
+        if (progress <= 90) {
+            $('#trainingProgress').css('width', progress + '%').text(progress + '%');
+        }
+    }, 1500);
+    
+    $.ajax({
+        url: '/api/train-models',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ test_size: testSize }),
+        success: function(response) {
+            clearInterval(progressInterval);
+            $('#trainingProgress').css('width', '100%').text('100%');
+            
+            if (response.success) {
+                displayResults(response);
+                $('#trainStatus').html('<div class="alert alert-success"><i class="fas fa-check"></i> Models trained successfully!</div>');
+            }
+        },
+        error: function(xhr) {
+            clearInterval(progressInterval);
+            const error = xhr.responseJSON?.error || 'Unknown error';
+            $('#trainStatus').html(`<div class="alert alert-danger"><i class="fas fa-times"></i> Error: ${error}</div>`);
+            $('#progressContainer').hide();
+            $('#noTraining').show();
+        },
+        complete: function() {
+            btn.prop('disabled', false).html('<i class="fas fa-play"></i> Train Models');
+        }
+    });
+});
+
+function displayResults(data) {
+    // Show sections
+    $('#resultsSection, #chartsSection, #featureSection').show();
+    
+    // Update table
+    const tbody = $('#resultsBody');
+    tbody.empty();
+    
+    let bestAccuracy = 0;
+    let bestModel = '';
+    
+    data.models.forEach(model => {
+        const row = `
+            <tr ${model.Accuracy > bestAccuracy ? 'class="table-success"' : ''}>
+                <td><strong>${model.Model}</strong></td>
+                <td>${(model.Accuracy * 100).toFixed(2)}%</td>
+                <td>${(model.Precision * 100).toFixed(2)}%</td>
+                <td>${(model.Recall * 100).toFixed(2)}%</td>
+                <td>${(model['F1 Score'] * 100).toFixed(2)}%</td>
+                <td>${(model['ROC AUC'] * 100).toFixed(2)}%</td>
+            </tr>
+        `;
+        tbody.append(row);
+        
+        if (model.Accuracy > bestAccuracy) {
+            bestAccuracy = model.Accuracy;
+            bestModel = model.Model;
+        }
+    });
+    
+    // Model Comparison Chart
+    const compCtx = document.getElementById('modelComparisonChart').getContext('2d');
+    if (modelComparisonChart) modelComparisonChart.destroy();
+    
+    const modelNames = data.models.map(m => m.Model);
+    const accuracies = data.models.map(m => m.Accuracy * 100);
+    
+    modelComparisonChart = new Chart(compCtx, {
+        type: 'bar',
+        data: {
+            labels: modelNames,
+            datasets: [{
+                label: 'Accuracy (%)',
+                data: accuracies,
+                backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+    
+    // Metrics Radar Chart
+    const radarCtx = document.getElementById('metricsRadarChart').getContext('2d');
+    if (metricsRadarChart) metricsRadarChart.destroy();
+    
+    const datasets = data.models.map((model, idx) => ({
+        label: model.Model,
+        data: [
+            model.Accuracy * 100,
+            model.Precision * 100,
+            model.Recall * 100,
+            model['F1 Score'] * 100,
+            model['ROC AUC'] * 100
+        ],
+        borderColor: ['#007bff', '#28a745', '#ffc107', '#dc3545'][idx],
+        backgroundColor: ['rgba(0,123,255,0.2)', 'rgba(40,167,69,0.2)', 'rgba(255,193,7,0.2)', 'rgba(220,53,69,0.2)'][idx]
+    }));
+    
+    metricsRadarChart = new Chart(radarCtx, {
+        type: 'radar',
+        data: {
+            labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score', 'ROC AUC'],
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Feature Importance Chart
+    if (data.feature_importance) {
+        const featCtx = document.getElementById('featureImportanceChart').getContext('2d');
+        if (featureImportanceChart) featureImportanceChart.destroy();
+        
+        const features = data.feature_importance.slice(0, 10);
+        const featureNames = features.map(f => f.Feature);
+        const importances = features.map(f => f.Importance);
+        
+        featureImportanceChart = new Chart(featCtx, {
+            type: 'horizontalBar',
+            data: {
+                labels: featureNames,
+                datasets: [{
+                    label: 'Importance',
+                    data: importances,
+                    backgroundColor: '#17a2b8',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+}
+</script>
+{% endblock %}
